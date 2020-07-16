@@ -11,6 +11,7 @@
 
 namespace Tymon\JWTAuth;
 
+use App\Models\User;
 use BadMethodCallException;
 use Illuminate\Auth\GuardHelpers;
 use Illuminate\Contracts\Auth\Guard;
@@ -79,7 +80,7 @@ class JWTGuard implements Guard
             ($payload = $this->jwt->check(true)) &&
             $this->validateSubject()
         ) {
-            return $this->user = $this->provider->retrieveById($payload['sub']);
+            return $this->user = $user = User::findByUuid($payload['sub']);
         }
     }
 
@@ -194,7 +195,7 @@ class JWTGuard implements Guard
      */
     public function tokenById($id)
     {
-        if ($user = $this->provider->retrieveById($id)) {
+        if ($user = User::findByUuid($id)) {
             return $this->jwt->fromUser($user);
         }
     }
@@ -226,8 +227,10 @@ class JWTGuard implements Guard
      */
     public function onceUsingId($id)
     {
-        if ($user = $this->provider->retrieveById($id)) {
+        if ($user = User::findByUuid($id)) {
             $this->setUser($user);
+
+            //auth()->login($this->user);
 
             return true;
         }
