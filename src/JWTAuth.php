@@ -11,6 +11,7 @@
 
 namespace Tymon\JWTAuth;
 
+use App\Models\User;
 use Tymon\JWTAuth\Contracts\Providers\Auth;
 use Tymon\JWTAuth\Http\Parser\Parser;
 
@@ -63,7 +64,7 @@ class JWTAuth extends JWT
     {
         $id = $this->getPayload()->get('sub');
 
-        if (! $this->auth->byId($id)) {
+        if (! User::findByUuid($id)) {
             return false;
         }
 
